@@ -144,3 +144,17 @@ class EmployeeTestCase(APITestCase):
         }        
         response = self.api_client.put(self.update_employee_url, data)
         self.assertEqual(response.status_code, 400)
+
+
+
+
+# tasks management tests
+class TaskTestCase(APITestCase):
+    """ task management test case """
+    def setUp(self):
+        """ base setup values """
+        self.api_client = APIClient()
+        self.add_task_url = reverse('api:add_task')
+        self.update_task_url = reverse('api:update_task')
+        self.delete_task_url = reverse('api:delete_task')
+        
