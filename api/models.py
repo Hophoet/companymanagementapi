@@ -11,7 +11,8 @@ class Task(models.Model):
     employee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employee')
     title = models.CharField(max_length=100)
     description = models.TextField()
-    dealine = models.DateTimeField()
+    deadline = models.DateTimeField()
+
 
 
 # Profil model represent the additinal information for the employee
