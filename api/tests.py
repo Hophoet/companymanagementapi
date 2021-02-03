@@ -1,10 +1,11 @@
+from datetime import datetime
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase, APIClient
 from .serializers import AddNewEmployeeSerializer
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_403_FORBIDDEN
 from django.shortcuts import reverse
-from .models import User, Profil
+from .models import User, Profil, Task
 from PIL import Image
 import io
 
@@ -171,7 +172,7 @@ class TaskTestCase(APITestCase):
             'employee_id':employee.id+10, 
             'title':'Github workflow',
             'description':'Setup the fastapi api project workflow',
-            'deadline':'2021-08-12 12:09:00'
+            'deadline':datetime.now()
             
         }
         response = self.api_client.post(self.add_task_url, data)
@@ -190,9 +191,29 @@ class TaskTestCase(APITestCase):
             'employee_id':employee.id, 
             'title':'Github workflow',
             'description':'Setup the fastapi api project workflow',
-            'deadline':'2021-03-30 11:09:00'
+            'deadline':datetime.now()
             
         }
         response = self.api_client.post(self.add_task_url, data)
         self.assertEqual(response.status_code, HTTP_200_OK)
-                     
+
+
+    def test_task_update_with_wrong_task_id(self):
+        """ test the task update with a wrong task to update id
+        (request) -> 400 as response status code(BAD REQUEST) """
+        #add employee, task
+        employee = User.objects.create(is_staff=False, username='employee', password='password') #auth
+        task = Task.objects.create(employee=employee, title='test task', description='test task description', dealine='2021-03-12 12:34:00')
+
+        #auth
+        user = User.objects.create(is_staff=True, username='admin', password='password')
+        self.api_client.force_authenticate(user=user)
+        #add task
+        data = {
+            'title':'test task updated', 
+            'task_id':task.id + 10,
+            'description':'test task description updated',
+            'deadline':datetime.now()
+        }        
+        response = self.api_client.put(self.update_task_url, data)
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
