@@ -203,7 +203,7 @@ class TaskTestCase(APITestCase):
         (request) -> 400 as response status code(BAD REQUEST) """
         #add employee, task
         employee = User.objects.create(is_staff=False, username='employee', password='password') #auth
-        task = Task.objects.create(employee=employee, title='test task', description='test task description', dealine='2021-03-12 12:34:00')
+        task = Task.objects.create(employee=employee, title='test task', description='test task description', deadline=datetime.now())
 
         #auth
         user = User.objects.create(is_staff=True, username='admin', password='password')
@@ -224,7 +224,7 @@ class TaskTestCase(APITestCase):
         (request) -> 200 as response status code(BAD REQUEST) """
         #add employee, task
         employee = User.objects.create(is_staff=False, username='employee', password='password') #auth
-        task = Task.objects.create(employee=employee, title='test task', description='test task description', dealine='2021-03-12 12:34:00')
+        task = Task.objects.create(employee=employee, title='test task', description='test task description', deadline=datetime.now())
 
         #auth
         user = User.objects.create(is_staff=True, username='admin', password='password')
@@ -239,3 +239,30 @@ class TaskTestCase(APITestCase):
         response = self.api_client.put(self.update_task_url, data)
         self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(Task.objects.all().count(), 1)
+
+
+
+    def test_delete_task(self):
+        """ test done delete task
+        (request) -> 2OO as response status code """
+        # admin
+        admin = User.objects.create(is_staff=True, username='admin', password='password')
+        # add employee, task
+        employee = User.objects.create(is_staff=False, username='employee', password='password')
+        task = Task.objects.create(
+            employee=employee,
+            title='employee test task',
+            description='test task description',
+            deadline=datetime.now()
+
+        )
+        # admin authentication
+        self.api_client.force_authenticate(user=admin)
+        data = {
+            'task_id':task.id
+        }
+        response = self.api_client.delete(self.delete_task_url, data)
+        print(response.data)
+        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(Task.objects.all().count(), 0)
+        
