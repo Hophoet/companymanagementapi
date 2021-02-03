@@ -178,3 +178,21 @@ class TaskTestCase(APITestCase):
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST) 
 
 
+
+    def test_successfull_task_adding(self):
+        """ test a valid task adding
+            (request) -> 200"""
+        user = User.objects.create( username='test user', password='jkld', is_staff=True)
+        #employee
+        employee = User.objects.create( username='employee', password='jkld', is_staff=False)
+        self.api_client.force_authenticate(user=user)
+        data = {
+            'employee_id':employee.id, 
+            'title':'Github workflow',
+            'description':'Setup the fastapi api project workflow',
+            'deadline':'2021-03-30 11:09:00'
+            
+        }
+        response = self.api_client.post(self.add_task_url, data)
+        self.assertEqual(response.status_code, HTTP_200_OK)
+                     
