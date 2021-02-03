@@ -208,7 +208,7 @@ class TaskTestCase(APITestCase):
         #auth
         user = User.objects.create(is_staff=True, username='admin', password='password')
         self.api_client.force_authenticate(user=user)
-        #add task
+        #update task
         data = {
             'title':'test task updated', 
             'task_id':task.id + 10,
@@ -217,3 +217,25 @@ class TaskTestCase(APITestCase):
         }        
         response = self.api_client.put(self.update_task_url, data)
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+
+    def test_task_update(self):
+        """ test valid task update
+        (request) -> 200 as response status code(BAD REQUEST) """
+        #add employee, task
+        employee = User.objects.create(is_staff=False, username='employee', password='password') #auth
+        task = Task.objects.create(employee=employee, title='test task', description='test task description', dealine='2021-03-12 12:34:00')
+
+        #auth
+        user = User.objects.create(is_staff=True, username='admin', password='password')
+        self.api_client.force_authenticate(user=user)
+        #update task
+        data = {
+            'title':'test task updated', 
+            'task_id':task.id,
+            'description':'test task description updated',
+            'deadline':datetime.now()
+        }        
+        response = self.api_client.put(self.update_task_url, data)
+        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(Task.objects.all().count(), 1)
