@@ -158,3 +158,23 @@ class TaskTestCase(APITestCase):
         self.update_task_url = reverse('api:update_task')
         self.delete_task_url = reverse('api:delete_task')
         
+
+    
+    def test_add_new_task_with_invalid_employee_id(self):
+        """ test the new task to an invalid employee id  
+            (request) -> 400"""
+        user = User.objects.create( username='test user', password='jkld', is_staff=True)
+        #employee
+        employee = User.objects.create( username='employee', password='jkld', is_staff=False)
+        self.api_client.force_authenticate(user=user)
+        data = {
+            'employee_id':employee.id+10, 
+            'title':'Github workflow',
+            'description':'Setup the fastapi api project workflow',
+            'deadline':'2021-08-12 12:09:00'
+            
+        }
+        response = self.api_client.post(self.add_task_url, data)
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST) 
+
+
