@@ -86,7 +86,6 @@ class UpdateEmployeeView(APIView):
         except IntegrityError as error:
             return Response(data={'text':'username already exists'}, status=HTTP_400_BAD_REQUEST)
 
-        profil.username = username
         profil.salary = salary
         profil.picture = picture
         profil.save()
@@ -141,10 +140,11 @@ class AddNewTaskView(APIView):
         description = request.data.get('description')
         deadline = request.data.get('deadline')
         try:
-            employee = User.objects.get(id=employee_id)
+            employee = User.objects.get(id=employee_id, is_staff=False)
         except ObjectDoesNotExist as error:
             return Response(data={'text':'employee not exists'}, status=HTTP_400_BAD_REQUEST)
-        Task.objects.create(employee=employee, title=title, description=description, dealine=deadline)
+        Task.objects.create(employee=employee, title=title, description=description, deadline=deadline)
+
         return Response(data=serializer.data, status=HTTP_200_OK)
 
 
