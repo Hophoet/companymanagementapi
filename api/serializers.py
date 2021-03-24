@@ -45,3 +45,12 @@ class AddNewTaskSerializer(serializers.Serializer):
     description = serializers.CharField()
     employee_id = serializers.IntegerField()
     deadline = serializers.DateTimeField()
+
+
+
+class UpdateTaskSerializer(serializers.Serializer):
+    """ update task end point serializer """
+    task_id = serializers.IntegerField()
+    title = serializers.CharField()
+    description = serializers.CharField()
+    deadline = serializers.DateTimeField() 
