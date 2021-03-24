@@ -4,11 +4,16 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 from django.core import serializers
 from rest_framework.views import APIView
-from .serializers import AddNewEmployeeSerializer, UpdateEmployeeSerializer, DeleteEmployeeSerializer, UserSerializer
+from .serializers import (AddNewEmployeeSerializer, 
+                            UpdateEmployeeSerializer, 
+                            DeleteEmployeeSerializer, 
+                            UserSerializer,
+                            AddNewTaskSerializer 
+                            )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK
-from .models import Profil
+from .models import Profil, Task
 
 class GetEmployeesView(APIView):
     """ employee getting by admin view """
@@ -110,3 +115,33 @@ class DeleteEmployeeView(APIView):
 
         employee.delete()
         return Response(data={'text':f'employee({employee}) deleted successfully'}, status=HTTP_200_OK)
+
+
+
+
+#
+class AddNewTaskView(APIView):
+    """ tasks adding management by admin view """
+    permission_classes = (IsAdminUser,)
+    serializer_class = AddNewTaskSerializer
+
+    def post(self, request, *args, **kwargs):
+        """ post request method """
+        serializer = self.serializer_class(
+            data=request.data,
+            context={'request':request}
+        )
+        serializer.is_valid(raise_exception=True)
+        #
+        employee_id = serializer.data.get('employee_id')
+        title = serializer.data.get('title')
+        description = request.data.get('description')
+        deadline = request.data.get('deadline')
+        try:
+            employee = User.objects.get(id=employee_id)
+        except ObjectDoesNotExist as error:
+            return Response(data={'text':'employee not exists'}, status=HTTP_400_BAD_REQUEST)
+        Task.objects.create(employee=employee, title=title, description=description, dealine=deadline)
+        return Response(data=serializer.data, status=HTTP_200_OK)
+
+    
