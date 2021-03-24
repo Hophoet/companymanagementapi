@@ -54,3 +54,10 @@ class UpdateTaskSerializer(serializers.Serializer):
     title = serializers.CharField()
     description = serializers.CharField()
     deadline = serializers.DateTimeField() 
+
+
+
+
+class DeleteTaskSerializer(serializers.Serializer):
+    """ delete task end point serializer """
+    task_id = serializers.IntegerField()
