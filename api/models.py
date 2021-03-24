@@ -18,6 +18,9 @@ class Task(models.Model):
 # Profil model represent the additinal information for the employee
 class Profil(models.Model):
     """ Employee Profile, for additional informations for the user """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profil')
     picture = models.ImageField()
     salary = models.IntegerField()
+
+    def __str__(self):
+        return f'salary: {self.salary}'
