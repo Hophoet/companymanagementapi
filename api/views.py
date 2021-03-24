@@ -8,7 +8,8 @@ from .serializers import (AddNewEmployeeSerializer,
                             UpdateEmployeeSerializer, 
                             DeleteEmployeeSerializer, 
                             UserSerializer,
-                            AddNewTaskSerializer 
+                            AddNewTaskSerializer,
+                            UpdateTaskSerializer
                             )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -144,4 +145,32 @@ class AddNewTaskView(APIView):
         Task.objects.create(employee=employee, title=title, description=description, dealine=deadline)
         return Response(data=serializer.data, status=HTTP_200_OK)
 
-    
+
+class UpdateTaskView(APIView):
+    """ task updating management by admin view """
+    permission_classes = (IsAdminUser,)
+    serializer_class = UpdateTaskSerializer
+
+    def put(self, request, *args, **kwargs):
+        """ post request method """
+        serializer = self.serializer_class(
+            data=request.data,
+            context={'request':request}
+        )
+        serializer.is_valid(raise_exception=True)
+        #
+        task_id = serializer.data.get('task_id')
+        title = serializer.data.get('title')
+        description = serializer.data.get('description')
+        deadline = request.data.get('deadline')
+        try:
+            task = Task.objects.get(id=task_id)
+        except ObjectDoesNotExist as error:
+            return Response(data={'text':'task not exists'}, status=HTTP_400_BAD_REQUEST)
+
+        
+        task.title = title
+        task.description = description
+        task.deadline = deadline
+        task.save()
+        return Response(data=serializer.data, status=HTTP_200_OK)
