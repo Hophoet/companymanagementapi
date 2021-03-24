@@ -2,13 +2,23 @@ from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
+from django.core import serializers
 from rest_framework.views import APIView
-from .serializers import AddNewEmployeeSerializer, UpdateEmployeeSerializer, DeleteEmployeeSerializer
+from .serializers import AddNewEmployeeSerializer, UpdateEmployeeSerializer, DeleteEmployeeSerializer, UserSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK
 from .models import Profil
 
+class GetEmployeesView(APIView):
+    """ employee getting by admin view """
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request, *args, **kwargs):
+        """ post request method """
+        employees = User.objects.filter(profil__isnull=False)
+        serializer = UserSerializer(employees, many=True)
+        return Response(data=serializer.data, status=HTTP_200_OK)
 
 #
 class AddNewEmployeeView(APIView):
@@ -99,5 +109,4 @@ class DeleteEmployeeView(APIView):
             return Response(data={'text':f'this user{employee} it not an employee'}, status=HTTP_400_BAD_REQUEST)
 
         employee.delete()
-
         return Response(data={'text':f'employee({employee}) deleted successfully'}, status=HTTP_200_OK)
