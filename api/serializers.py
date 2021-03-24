@@ -15,3 +15,9 @@ class UpdateEmployeeSerializer(serializers.Serializer):
     username = serializers.CharField()
     salary = serializers.IntegerField()
     picture = serializers.ImageField() 
+
+
+
+class DeleteEmployeeSerializer(serializers.Serializer):
+    """ delete employee end point serializer """
+    employee_id = serializers.IntegerField()
