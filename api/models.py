@@ -9,7 +9,6 @@ User = get_user_model()
 class Task(models.Model):
     """ Employee tasks model """
     employee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employee')
-    admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin')
     title = models.CharField(max_length=100)
     description = models.TextField()
     dealine = models.DateTimeField()
@@ -24,3 +23,6 @@ class Profil(models.Model):
 
     def __str__(self):
         return f'salary: {self.salary}'
+
+
+
