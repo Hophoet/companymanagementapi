@@ -36,3 +36,12 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined',
             'last_login'
         )
+
+
+
+class AddNewTaskSerializer(serializers.Serializer):
+    """ add new task end point serializer """
+    title = serializers.CharField()
+    description = serializers.CharField()
+    employee_id = serializers.IntegerField()
+    deadline = serializers.DateTimeField()
