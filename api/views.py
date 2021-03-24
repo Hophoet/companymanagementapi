@@ -9,7 +9,8 @@ from .serializers import (AddNewEmployeeSerializer,
                             DeleteEmployeeSerializer, 
                             UserSerializer,
                             AddNewTaskSerializer,
-                            UpdateTaskSerializer
+                            UpdateTaskSerializer,
+                            DeleteTaskSerializer
                             )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -174,3 +175,26 @@ class UpdateTaskView(APIView):
         task.deadline = deadline
         task.save()
         return Response(data=serializer.data, status=HTTP_200_OK)
+
+class DeleteTaskView(APIView):
+    """ task deleting management by admin view """
+    permission_classes = (IsAdminUser,)
+    serializer_class = DeleteTaskSerializer
+
+    def delete(self, request, *args, **kwargs):
+        """ post request method """
+        serializer = self.serializer_class(
+            data=request.data,
+            context={'request':request}
+        )
+        serializer.is_valid(raise_exception=True)
+        #
+        task_id = serializer.data.get('task_id')
+        try:
+            task = Task.objects.get(id=task_id)
+        except ObjectDoesNotExist as error:
+            return Response(data={'text':'task not exists'}, status=HTTP_400_BAD_REQUEST)
+
+        task.delete()
+        return Response(data={'text':f'task({task.title}) deleted successfully'}, status=HTTP_200_OK)
+
