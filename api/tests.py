@@ -25,4 +25,11 @@ class EmployeeTestCase(APITestCase):
         response = self.api_client.post(self.add_employee_url, data)
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST) 
 
-   
+    def test_add_new_employee_by_not_admin_user(self):
+        """ test the new employee saving by not admin authenticated user 
+            (request) -> 403"""
+        user = User.objects.create( username='test user', password='jkld')
+        self.api_client.force_authenticate(user=user)
+        data = {'username':'lay', 'password':''}
+        response = self.api_client.post(self.add_employee_url, data)
+        self.assertEqual(response.status_code, HTTP_403_FORBIDDEN) 
