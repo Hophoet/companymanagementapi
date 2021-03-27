@@ -17,6 +17,7 @@ class EmployeeTestCase(APITestCase):
         self.get_employees_url = reverse('api:get_employees')
         self.add_employee_url = reverse('api:add_employee')
         self.update_employee_url = reverse('api:update_employee')
+        self.delete_employee_url = reverse('api:delete_employee')
         
 
     def test_add_new_employee_with_incomplete_data(self):
@@ -81,12 +82,25 @@ class EmployeeTestCase(APITestCase):
         self.assertEqual(employees_after_user_created, employees_before_employee_created + 1)
 
 
+    def test_delete_employee_with_wrong_employee_id(self):
+        """ test employee delete with wrong empoyee id 
+        (request) -> 400 as response status code """
+        #admin
+        user = User.objects.create(is_staff=True, username='admin', password='password')
+        self.api_client.force_authenticate(user=user)
+        data = {
+            'employee_id':user.id + 10
+        }
+        response = self.api_client.delete(self.delete_employee_url, data)
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+
+
     def test_employee_update_with_wrong_employee_id(self):
         """ test the employee update with a wrong employee to update id
         (request) -> 400 as response status code(BAD REQUEST) """
         #add employee
-        employee = User.objects.create(is_staff=False, username='employee', password='password')
-        #auth
+        employee = User.objects.create(is_staff=False, username='employee', password='password') #auth
         user = User.objects.create(is_staff=True, username='admin', password='password')
         self.api_client.force_authenticate(user=user)
         #add employee
