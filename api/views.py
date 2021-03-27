@@ -4,6 +4,7 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
 from django.core import serializers
 from rest_framework.views import APIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from .serializers import (AddNewEmployeeSerializer, 
                             UpdateEmployeeSerializer, 
                             DeleteEmployeeSerializer, 
@@ -198,3 +199,8 @@ class DeleteTaskView(APIView):
         task.delete()
         return Response(data={'text':f'task({task.title}) deleted successfully'}, status=HTTP_200_OK)
 
+
+class UserProfilView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
