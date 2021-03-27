@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase, APIClient
 from .serializers import AddNewEmployeeSerializer
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_403_FORBIDDEN
 from django.shortcuts import reverse
-from .models import User
+from .models import User, Profil
 from PIL import Image
 import io
 
@@ -106,6 +106,26 @@ class EmployeeTestCase(APITestCase):
         }
         response = self.api_client.delete(self.delete_employee_url, data)
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
+    def test_delete_employee_with_success(self):
+        """ test done delete employee
+        (request) -> 2OO as response status code """
+        #admin
+        admin = User.objects.create(is_staff=True, username='admin', password='password')
+        #employee
+        employee = User.objects.create(is_staff=False, username='employee', password='password')
+        Profil.objects.create(user=employee, salary=400)
+        #employees counts after a new added employee
+        employees_count_before_employee_deleted = User.objects.filter(is_staff=False).count()
+        self.api_client.force_authenticate(user=admin)
+        data = {
+            'employee_id':employee.id
+        }
+        response = self.api_client.delete(self.delete_employee_url, data)
+        employees_count_after_employee_added = User.objects.filter(is_staff=False).count()
+        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(employees_count_before_employee_deleted, employees_count_after_employee_added + 1)
+        
 
 
     def test_employee_update_with_wrong_employee_id(self):
