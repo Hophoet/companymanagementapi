@@ -79,3 +79,22 @@ class EmployeeTestCase(APITestCase):
         employees_after_user_created = User.objects.filter(is_staff=False).count()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(employees_after_user_created, employees_before_employee_created + 1)
+
+
+    def test_employee_update_with_wrong_employee_id(self):
+        """ test the employee update with a wrong employee to update id
+        (request) -> 400 as response status code(BAD REQUEST) """
+        #add employee
+        employee = User.objects.create(is_staff=False, username='employee', password='password')
+        #auth
+        user = User.objects.create(is_staff=True, username='admin', password='password')
+        self.api_client.force_authenticate(user=user)
+        #add employee
+        data = {
+            'username':'lay', 
+            'employee_id':employee.id + 10,
+            'salary':300,
+            'picture':self.generate_photo_file()
+        }        
+        response = self.api_client.put(self.update_employee_url, data)
+        self.assertEqual(response.status_code, 400)
