@@ -95,6 +95,18 @@ class EmployeeTestCase(APITestCase):
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
 
 
+    def test_delete_admin_as_employee(self):
+        """ test delete admin as employee 
+        (request) -> 400 as response status code """
+        #admin
+        admin = User.objects.create(is_staff=True, username='admin', password='password')
+        self.api_client.force_authenticate(user=admin)
+        data = {
+            'employee_id':admin.id
+        }
+        response = self.api_client.delete(self.delete_employee_url, data)
+        self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
+
 
     def test_employee_update_with_wrong_employee_id(self):
         """ test the employee update with a wrong employee to update id
