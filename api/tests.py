@@ -1,9 +1,12 @@
 from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase, APIClient
 from .serializers import AddNewEmployeeSerializer
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_403_FORBIDDEN
 from django.shortcuts import reverse
 from .models import User
+from PIL import Image
+import io
 
 # employees management tests
 class EmployeeTestCase(APITestCase):
@@ -33,3 +36,31 @@ class EmployeeTestCase(APITestCase):
         data = {'username':'lay', 'password':''}
         response = self.api_client.post(self.add_employee_url, data)
         self.assertEqual(response.status_code, HTTP_403_FORBIDDEN) 
+
+
+    def generate_photo_file(self):
+        file = io.BytesIO()
+        image = Image.new('RGBA', size=(100, 100), color=(155, 0, 0))
+        image.save(file, 'png')
+        file.name = 'test.png'
+        file.seek(0)
+        return file
+
+    def test_add_new_employee(self):
+        """ test the new employee saving with valid data
+        (request) -> 200 """
+        user = User.objects.create(is_staff=True, username='test user', password='jkld')
+        self.api_client.force_authenticate(user=user)
+        image = self.generate_photo_file()
+
+        data = {
+            'username':'lay', 
+            'password':'kjksdfklj',
+            'salary':300,
+            'picture':image
+            
+        }
+        response = self.api_client.post(self.add_employee_url, data)
+        self.assertEqual(response.status_code, HTTP_200_OK)
+
+
