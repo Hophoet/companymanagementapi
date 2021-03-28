@@ -11,7 +11,8 @@ from .serializers import (AddNewEmployeeSerializer,
                             UserSerializer,
                             AddNewTaskSerializer,
                             UpdateTaskSerializer,
-                            DeleteTaskSerializer
+                            DeleteTaskSerializer,
+                            TaskSerializer
                             )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -120,6 +121,15 @@ class DeleteEmployeeView(APIView):
 
 
 
+class GetTasksView(APIView):
+    """ tasks getting by admin view """
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request, *args, **kwargs):
+        """ post request method """
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(data=serializer.data, status=HTTP_200_OK)
 
 #
 class AddNewTaskView(APIView):
