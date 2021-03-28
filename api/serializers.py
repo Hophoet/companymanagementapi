@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from .models import Task
 
 class AddNewEmployeeSerializer(serializers.Serializer):
     """ add new employee end point serializer """
@@ -37,6 +38,18 @@ class UserSerializer(serializers.ModelSerializer):
             'last_login'
         )
 
+class TaskSerializer(serializers.ModelSerializer):
+    """ task model serializer """
+    employee = serializers.StringRelatedField()
+    class Meta:
+        """ task model serializer Meta class """
+        model = Task
+        fields = (
+            'title',
+            'description',
+            'deadline',
+            'employee'
+        )
 
 
 class AddNewTaskSerializer(serializers.Serializer):
