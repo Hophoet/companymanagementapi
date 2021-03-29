@@ -19,6 +19,17 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK
 from .models import Profil, Task
 
+class UserIsAnAdminView(APIView):
+    """ employee getting by admin view """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        """ post request method """
+        user = request.user
+        is_staff = user.is_staff
+        
+        return Response(data={'is_admin': is_staff}, status=HTTP_200_OK)
+
 class GetEmployeesView(APIView):
     """ employee getting by admin view """
     permission_classes = (IsAdminUser,)
@@ -214,3 +225,5 @@ class UserProfilView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
