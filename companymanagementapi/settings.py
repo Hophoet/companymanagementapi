@@ -27,7 +27,8 @@ SECRET_KEY = '8yo)d)z+o$=3rr0o^-g3zlwc!n7h$q9cw=-oa-8a&3o#^-8b9k'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'companymanagementapi.herokuapp.com']
+ALLOWED_HOSTS=['*']
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -50,7 +51,10 @@ INSTALLED_APPS = [
 
     'rest_framework.authtoken',
     'rest_auth',
-    'rest_auth.registration'
+    'rest_auth.registration',
+
+    'corsheaders'
+
 ]
 
 SITE_ID = 1
@@ -63,6 +67,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'companymanagementapi.urls'
