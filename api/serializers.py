@@ -31,6 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
         """ comment model serializer Meta class """
         model = User
         fields = (
+            'id',
             'username',
             'email',
             'profil',
@@ -45,6 +46,7 @@ class TaskSerializer(serializers.ModelSerializer):
         """ task model serializer Meta class """
         model = Task
         fields = (
+            'id',
             'title',
             'description',
             'deadline',
