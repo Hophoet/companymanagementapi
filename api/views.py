@@ -221,6 +221,18 @@ class DeleteTaskView(APIView):
         return Response(data={'text':f'task({task.title}) deleted successfully'}, status=HTTP_200_OK)
 
 
+class GetEmployeeTasks(APIView):
+    """ tasks getting by admin view """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        """ post request method """
+        tasks = Task.objects.filter(employee=request.user)
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(data=serializer.data, status=HTTP_200_OK)
+
+
+
 class UserProfilView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
