@@ -155,10 +155,33 @@ class TaskTestCase(APITestCase):
     def setUp(self):
         """ base setup values """
         self.api_client = APIClient()
+        self.get_tasks_url = reverse('api:get_tasks')
         self.add_task_url = reverse('api:add_task')
         self.update_task_url = reverse('api:update_task')
         self.delete_task_url = reverse('api:delete_task')
         
+
+
+    def test_get_tasks(self):
+        """ test the tasks avaialble getting 
+        (request) -> 200 """
+        # Admin authentication
+        admin = User.objects.create(is_staff=True, username='test user', password='jkld')
+        self.api_client.force_authenticate(user=admin)
+        # Get available tasks
+        tasks_before_task_created = Task.objects.all().count()
+        #create new task
+        employee = User.objects.create(username='test employee', password='test password')
+        Task.objects.create(
+            title='test task',
+            description='test task description',
+            employee=employee,
+            deadline='2021-03-30T11:09:00Z'
+        )
+        response = self.api_client.get(self.get_tasks_url)
+        tasks_after_task_created = Task.objects.all().count()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(tasks_after_task_created, tasks_before_task_created + 1)
 
     
     def test_add_new_task_with_invalid_employee_id(self):
@@ -172,7 +195,7 @@ class TaskTestCase(APITestCase):
             'employee_id':employee.id+10, 
             'title':'Github workflow',
             'description':'Setup the fastapi api project workflow',
-            'deadline':datetime.now()
+            'deadline':'2021-03-30T11:09:00Z'
             
         }
         response = self.api_client.post(self.add_task_url, data)
@@ -191,7 +214,7 @@ class TaskTestCase(APITestCase):
             'employee_id':employee.id, 
             'title':'Github workflow',
             'description':'Setup the fastapi api project workflow',
-            'deadline':datetime.now()
+            'deadline':'2021-03-30T11:09:00Z'
             
         }
         response = self.api_client.post(self.add_task_url, data)
@@ -202,8 +225,8 @@ class TaskTestCase(APITestCase):
         """ test the task update with a wrong task to update id
         (request) -> 400 as response status code(BAD REQUEST) """
         #add employee, task
-        employee = User.objects.create(is_staff=False, username='employee', password='password') #auth
-        task = Task.objects.create(employee=employee, title='test task', description='test task description', deadline=datetime.now())
+        employee = User.objects.create(is_staff=False, username='employee', password='password')
+        task = Task.objects.create(employee=employee, title='test task', description='test task description', deadline='2021-03-30T11:09:00Z')
 
         #auth
         user = User.objects.create(is_staff=True, username='admin', password='password')
@@ -213,7 +236,7 @@ class TaskTestCase(APITestCase):
             'title':'test task updated', 
             'task_id':task.id + 10,
             'description':'test task description updated',
-            'deadline':datetime.now()
+            'deadline':'2021-03-30T11:09:00Z'
         }        
         response = self.api_client.put(self.update_task_url, data)
         self.assertEqual(response.status_code, HTTP_400_BAD_REQUEST)
@@ -224,7 +247,7 @@ class TaskTestCase(APITestCase):
         (request) -> 200 as response status code(BAD REQUEST) """
         #add employee, task
         employee = User.objects.create(is_staff=False, username='employee', password='password') #auth
-        task = Task.objects.create(employee=employee, title='test task', description='test task description', deadline=datetime.now())
+        task = Task.objects.create(employee=employee, title='test task', description='test task description', deadline='2021-03-30T11:09:00Z')
 
         #auth
         user = User.objects.create(is_staff=True, username='admin', password='password')
@@ -234,7 +257,7 @@ class TaskTestCase(APITestCase):
             'title':'test task updated', 
             'task_id':task.id,
             'description':'test task description updated',
-            'deadline':datetime.now()
+            'deadline':'2021-03-30T11:09:00Z'
         }        
         response = self.api_client.put(self.update_task_url, data)
         self.assertEqual(response.status_code, HTTP_200_OK)
@@ -253,7 +276,7 @@ class TaskTestCase(APITestCase):
             employee=employee,
             title='employee test task',
             description='test task description',
-            deadline=datetime.now()
+            deadline='2021-03-30T11:09:00Z'
 
         )
         # admin authentication
@@ -262,7 +285,6 @@ class TaskTestCase(APITestCase):
             'task_id':task.id
         }
         response = self.api_client.delete(self.delete_task_url, data)
-        print(response.data)
         self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(Task.objects.all().count(), 0)
         
