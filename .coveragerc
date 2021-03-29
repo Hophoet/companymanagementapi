@@ -1,0 +1,11 @@
+[run]
+omit = 
+	venv/*
+	env/*
+	api/migrations/*
+	api/__init__.py
+	api/admin.py
+	manage.py
+	companymanagementapi/*
+
+	
