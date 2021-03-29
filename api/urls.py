@@ -14,6 +14,7 @@ urlpatterns = [
     path('tasks/add', views.AddNewTaskView.as_view(), name='add_task'),
     path('tasks/update', views.UpdateTaskView.as_view(), name='update_task'),
     path('tasks/delete', views.DeleteTaskView.as_view(), name='delete_task'),
+    path('employee/tasks', views.GetEmployeeTasks.as_view(), name='get_employee_tasks'),
     
     path('profil/<int:pk>', views.UserProfilView.as_view(), name='user_profil')
 ]
