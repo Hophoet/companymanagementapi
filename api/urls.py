@@ -4,6 +4,7 @@ from . import views
 app_name = "api"
 
 urlpatterns = [
+    path('is-admin/', views.UserIsAnAdminView.as_view(), name='is_admin'),
     path('employees', views.GetEmployeesView.as_view(), name='get_employees'),
     path('employees/add', views.AddNewEmployeeView.as_view(), name='add_employee'),
     path('employees/update', views.UpdateEmployeeView.as_view(), name='update_employee'),
