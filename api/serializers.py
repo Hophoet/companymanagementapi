@@ -36,7 +36,9 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'profil',
             'date_joined',
-            'last_login'
+            'last_login',
+            'is_staff',
+            'auth_token'
         )
 
 class TaskSerializer(serializers.ModelSerializer):
