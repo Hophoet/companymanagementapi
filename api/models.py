@@ -23,7 +23,7 @@ class Profil(models.Model):
     salary = models.IntegerField()
 
     def __str__(self):
-        return f'salary: {self.salary}'
+        return f'{self.salary}'
 
 
 
