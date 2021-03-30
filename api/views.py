@@ -19,6 +19,16 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK
 from .models import Profil, Task
 
+class GetAuthenticatedUser(APIView):
+    """ authenticated user getting view """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        """ post request method """
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(data=serializer.data, status=HTTP_200_OK)
+
 class UserIsAnAdminView(APIView):
     """ employee getting by admin view """
     permission_classes = (IsAuthenticated,)
